@@ -1,87 +1,42 @@
-import 'dart:convert';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:random/domain/smite_session.dart';
 
-import 'domain/smite_god.dart';
+import 'page/home_page.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final FirebaseApp firebase = await Firebase.initializeApp();
+  runApp(MaterialApp(
+    title: 'Random',
+    home: App(firebase: firebase),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatefulWidget {
+  const App({Key? key, required this.firebase}) : super(key: key);
 
+  final FirebaseApp firebase;
+
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+    return FutureBuilder(
+      future: Future.value(widget.firebase),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text(snapshot.stackTrace.toString());
+        }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+        if (snapshot.connectionState == ConnectionState.done) {
+          return const HomePage(title: 'Random');
+        }
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late Future<SmiteSession> _smiteSession;
-  late Future<List<SmiteGod>> _gods;
-
-  void _fetchSession() {
-    setState(() {
-      _smiteSession = fetchSession();
-    });
-  }
-
-  void _fetchGods() {
-    _smiteSession.then((value) => {
-          setState(() {
-            _gods = fetchGods(value.sessionId);
-          })
-        });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _smiteSession = fetchSession();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: FutureBuilder<SmiteSession>(
-          future: _smiteSession,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Text(snapshot.data!.toJson().toString());
-            } else if (snapshot.hasError) {
-              return Text(jsonEncode(snapshot.stackTrace));
-            }
-
-            return const CircularProgressIndicator();
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _fetchGods,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+        return const CircularProgressIndicator();
+      },
     );
   }
 }

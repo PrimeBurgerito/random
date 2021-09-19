@@ -1,0 +1,29 @@
+{
+  "name": "firebase",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src",
+  "scripts": {
+    "json": "ts-node src/smite/json_smite.ts",
+    "migrate": "ts-node src/smite/migrate_smite.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "firebase-admin": "^9.11.1",
+    "luxon": "^2.0.2",
+    "md5": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "^2.0.4",
+    "@types/md5": "^2.3.1",
+    "@types/node": "^16.9.2",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
+    "eslint": "^7.32.0",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  }
+}
